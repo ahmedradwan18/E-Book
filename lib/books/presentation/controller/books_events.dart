@@ -12,6 +12,11 @@ class GetAllBooksEvent extends BooksEvent{
 }
 
 
-class GetUnKnownBooksEvent extends BooksEvent{
+class SearchBooksEvent extends BooksEvent{
+  final String name;
 
+  const SearchBooksEvent(this.name);
+
+  @override
+  List<Object> get props =>[name];
 }

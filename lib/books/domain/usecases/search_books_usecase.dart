@@ -4,13 +4,16 @@ import 'package:e_books/books/domain/repository/base_book_repository.dart';
 import 'package:e_books/core/error/failure.dart';
 import 'package:e_books/core/usecase/base_useCase.dart';
 
-class GetAllBooksUsecase extends BaseUseCase<List<Book>,NoParameters> {
+class SearchBooksUsecase extends BaseUseCase<List<Book>,String>{
+
   final BaseBookRepository baseBookRepository;
 
-  GetAllBooksUsecase({required this.baseBookRepository});
+  SearchBooksUsecase({ required this.baseBookRepository});
 
   @override
-  Future<Either<Failure, List<Book>>> call(NoParameters noParameters) async {
-    return await baseBookRepository.getAllBooks();
+  Future<Either<Failure,List<Book>>> call(String name)async{
+    return await baseBookRepository.searchBooks(name);
   }
 }
+
+

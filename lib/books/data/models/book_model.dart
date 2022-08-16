@@ -18,33 +18,18 @@ class BookModel extends Book {
   factory BookModel.fromJson(Map<String, dynamic> json) {
     return BookModel(
         id: json['id'],
-        title: json['title'],
-        author:
-        parseItems(json)
-
-        //AuthorModel.fromJson(json['authors'])
-
-/*        List<AuthorModel>.from(json['authors'].map((x) {
-          print('radwan $x');
-          return AuthorModel.fromJson(x);
-        }))*/
-        ,
-        coverImage: json['formats']['image/jpeg'],
-        downloadCount: json['download_count']);
+        title: json['title']??'title',
+        author: parseItems(json),
+        coverImage: json['formats']['image/jpeg']??'',
+        downloadCount: json['download_count']??0);
   }
 
   static List<AuthorModel>? parseItems(sportsJson) {
     var list = sportsJson['authors'] as List;
-    if (list != null) {
+    if (list.isNotEmpty) {
       List<AuthorModel> authorsList =
-      list.map((data) => AuthorModel.fromJson(data)).toList();
-      print('***** ${list.length}');
+          list.map((data) => AuthorModel.fromJson(data)).toList();
       return authorsList;
-    }else{
-      print('---- ${list.length}');
     }
   }
-
-
-
 }

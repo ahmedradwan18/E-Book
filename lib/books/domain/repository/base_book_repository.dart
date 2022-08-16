@@ -5,6 +5,6 @@ import 'package:e_books/core/error/failure.dart';
 abstract class BaseBookRepository{
 
   Future<Either<Failure,List<Book>>>getAllBooks();
-  Future<Either<Failure,List<Book>>> getUnKnownBooks();
+  Future<Either<Failure,List<Book>>> searchBooks(String bookName);
 
 }

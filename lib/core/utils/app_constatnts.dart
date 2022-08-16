@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 class AppConstants{
   static const baseUrl='https://gutendex.com/';
   static const allBooksEndPoint='books/';
+  static const searchBooksEndPoint='/books?search=';
 
 
 // list of colors that we use in our app

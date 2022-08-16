@@ -10,6 +10,7 @@ class AuthorModel extends Author {
             authorName: authorName, birthYear: birthYear, deathYear: deathYear);
 
   factory AuthorModel.fromJson(Map<String, dynamic> json) {
+
   return   AuthorModel(
         authorName: json['name'] ?? '',
         birthYear: json['birth_year'] ?? 0,

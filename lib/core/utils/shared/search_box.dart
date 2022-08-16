@@ -3,12 +3,14 @@ import 'package:flutter/material.dart';
 
 
 class SearchBox extends StatelessWidget {
+
   const SearchBox({
     Key? key,
     required this.onChanged,
   }) : super(key: key);
 
   final ValueChanged onChanged;
+
 
   @override
   Widget build(BuildContext context) {

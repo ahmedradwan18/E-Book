@@ -22,7 +22,12 @@ class BooksRepository extends BaseBookRepository {
   }
 
   @override
-  Future<Either<Failure, List<BookModel>>> getUnKnownBooks() {
-    throw UnimplementedError();
+  Future<Either<Failure, List<BookModel>>> searchBooks(String name) async{
+    final result =await  baseBookRemoteDataSource.searchBooks(name);
+    try {
+      return Right(result);
+    } on ServerException catch (failure) {
+      return Left(ServerFailure( message:  failure.errorMessageModel.message));
+    }
   }
 }

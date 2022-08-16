@@ -14,8 +14,10 @@ import 'package:e_books/core/services/services_locator.dart';
 import 'package:e_books/core/utils/app_constatnts.dart';
 import 'package:e_books/core/utils/enums.dart';
 import 'package:e_books/core/utils/shared/search_box.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:lottie/lottie.dart';
 import 'package:shimmer/shimmer.dart';
 
 class BooksScreen extends StatefulWidget {
@@ -26,7 +28,8 @@ class BooksScreen extends StatefulWidget {
 }
 
 class _BooksScreenState extends State<BooksScreen> {
-  List<Book> books = [];
+  //List<Book> books = [];
+  String searchedName = '';
 
   @override
   void initState() {
@@ -36,18 +39,28 @@ class _BooksScreenState extends State<BooksScreen> {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(create: (BuildContext context) {
-      return BookBloc(const BookStates(), sl())..add(GetAllBooksEvent());
+      return BookBloc(const BookStates(), sl(), sl())
+        ..add(GetAllBooksEvent()) ;
     }, child: BlocBuilder<BookBloc, BookStates>(
     //  buildWhen: (previous,current,)=>previous.allBooksState!=current.allBooksState,
       builder: (context, state) {
-
         return Scaffold(
           backgroundColor: AppConstants.kPrimaryColor,
           body: SafeArea(
             bottom: false,
             child: Column(
               children: <Widget>[
-                SearchBox(onChanged: (value) {}),
+                SearchBox(
+                    onChanged: (value) {
+                  searchedName=value;
+
+                  if (value != '') {
+                    BlocProvider.of<BookBloc>(context)
+                        .add(SearchBooksEvent(value));
+                  } else {
+                    BlocProvider.of<BookBloc>(context).add(GetAllBooksEvent());
+                  }
+                }),
                 CategoryList(),
                 const SizedBox(height: AppConstants.kDefaultPadding / 2),
                 Expanded(
@@ -65,25 +78,50 @@ class _BooksScreenState extends State<BooksScreen> {
                         ),
                       ),
 
-                      state.allBooksState == RequestState.loading
+                      (state.allBooksState == RequestState.loading &&
+                              state.searchBooksState == RequestState.loading)
                           ? Shimmer.fromColors(
                               baseColor: const Color(0xffc6c6c6),
                               highlightColor: Colors.blue.withOpacity(0.4),
                               child: ListView.builder(
-                                itemCount: 3,
-                                itemBuilder: (context, index) => FakeProductCard(
+                                itemCount: 5,
+                                itemBuilder: (context, index) =>
+                                    FakeProductCard(
                                   itemIndex: index,
-
                                 ),
                               ))
-                          : ListView.builder(
-                              itemCount: state.allBooksList.length,
-                              itemBuilder: (context, index) => ProductCard(
-                                itemIndex: index,
-                                press: () {},
-                                book: state.allBooksList[index],
-                              ),
-                            ),
+                          : (state.searchBooksList.isEmpty && searchedName!='')
+                              ? Center(
+                                child: Padding(
+                                  padding: const EdgeInsets.only(top: 30),
+                                  child: Column(
+                                    children: [
+                                      SizedBox(
+                                          child: Lottie.asset('assets/lotties/noBooks.json'),height: 350,),
+                                      const Text('No books found by that name..',style: TextStyle(fontWeight: FontWeight.bold,fontSize: 20,color: AppConstants.kPrimaryColor),)
+                                    ],
+                                  ),
+                                ),
+                              )
+                              : ListView.builder(
+                                  itemCount: BlocProvider.of<BookBloc>(context)
+                                          .searchList
+                                          .isEmpty
+                                      ? state.allBooksList.length
+                                      : BlocProvider.of<BookBloc>(context)
+                                          .searchList
+                                          .length,
+                                  itemBuilder: (context, index) => ProductCard(
+                                    itemIndex: index,
+                                    press: () {},
+                                    book: BlocProvider.of<BookBloc>(context)
+                                            .searchList
+                                            .isEmpty
+                                        ? state.allBooksList[index]
+                                        : BlocProvider.of<BookBloc>(context)
+                                            .searchList[index],
+                                  ),
+                                ),
                     ],
                   ),
                 ),
