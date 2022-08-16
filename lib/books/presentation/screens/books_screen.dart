@@ -38,7 +38,9 @@ class _BooksScreenState extends State<BooksScreen> {
     return BlocProvider(create: (BuildContext context) {
       return BookBloc(const BookStates(), sl())..add(GetAllBooksEvent());
     }, child: BlocBuilder<BookBloc, BookStates>(
+    //  buildWhen: (previous,current,)=>previous.allBooksState!=current.allBooksState,
       builder: (context, state) {
+
         return Scaffold(
           backgroundColor: AppConstants.kPrimaryColor,
           body: SafeArea(
