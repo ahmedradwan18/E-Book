@@ -1,12 +1,6 @@
-import 'package:e_books/books/data/datasource/book_remote_datasource.dart';
-import 'package:e_books/books/data/models/book_model.dart';
-import 'package:e_books/books/data/repository/books_repository.dart';
-import 'package:e_books/books/domain/entities/book.dart';
-import 'package:e_books/books/domain/repository/base_book_repository.dart';
-import 'package:e_books/books/domain/usecases/get_all_books_usecase.dart';
-import 'package:e_books/books/presentation/components/body.dart';
 import 'package:e_books/books/presentation/components/category_list.dart';
 import 'package:e_books/books/presentation/components/product_card.dart';
+import 'package:e_books/books/presentation/components/shimmer.dart';
 import 'package:e_books/books/presentation/controller/books_bloc.dart';
 import 'package:e_books/books/presentation/controller/books_events.dart';
 import 'package:e_books/books/presentation/controller/books_states.dart';
@@ -28,21 +22,15 @@ class BooksScreen extends StatefulWidget {
 }
 
 class _BooksScreenState extends State<BooksScreen> {
-  //List<Book> books = [];
   String searchedName = '';
 
   @override
-  void initState() {
-    super.initState();
-  }
-
-  @override
   Widget build(BuildContext context) {
+    print('inside build');
     return BlocProvider(create: (BuildContext context) {
-      return BookBloc(const BookStates(), sl(), sl())
-        ..add(GetAllBooksEvent()) ;
+      return BookBloc(const BookStates(), sl(), sl(), sl())
+        ..add(GetAllBooksEvent());
     }, child: BlocBuilder<BookBloc, BookStates>(
-    //  buildWhen: (previous,current,)=>previous.allBooksState!=current.allBooksState,
       builder: (context, state) {
         return Scaffold(
           backgroundColor: AppConstants.kPrimaryColor,
@@ -50,10 +38,9 @@ class _BooksScreenState extends State<BooksScreen> {
             bottom: false,
             child: Column(
               children: <Widget>[
-                SearchBox(
-                    onChanged: (value) {
-                  searchedName=value;
-
+                SearchBox(onChanged: (value) async {
+                  searchedName = value;
+                  await Future.delayed(const Duration(milliseconds: 300));
                   if (value != '') {
                     BlocProvider.of<BookBloc>(context)
                         .add(SearchBooksEvent(value));
@@ -79,47 +66,58 @@ class _BooksScreenState extends State<BooksScreen> {
                       ),
 
                       (state.allBooksState == RequestState.loading &&
-                              state.searchBooksState == RequestState.loading)
-                          ? Shimmer.fromColors(
-                              baseColor: const Color(0xffc6c6c6),
-                              highlightColor: Colors.blue.withOpacity(0.4),
-                              child: ListView.builder(
-                                itemCount: 5,
-                                itemBuilder: (context, index) =>
-                                    FakeProductCard(
-                                  itemIndex: index,
-                                ),
-                              ))
-                          : (state.searchBooksList.isEmpty && searchedName!='')
+                              state.searchBooksState == RequestState.loading &&
+                              state.filteredBooksState == RequestState.loading)
+                          ? const ShimmerWidget()
+                          : (state.searchBooksList.isEmpty &&
+                                  searchedName != '' &&
+                                  state.filteredBooksList.isEmpty)
                               ? Center(
-                                child: Padding(
-                                  padding: const EdgeInsets.only(top: 30),
-                                  child: Column(
-                                    children: [
-                                      SizedBox(
-                                          child: Lottie.asset('assets/lotties/noBooks.json'),height: 350,),
-                                      const Text('No books found by that name..',style: TextStyle(fontWeight: FontWeight.bold,fontSize: 20,color: AppConstants.kPrimaryColor),)
-                                    ],
+                                  child: Padding(
+                                    padding: const EdgeInsets.only(top: 30),
+                                    child: Column(
+                                      children: [
+                                        SizedBox(
+                                          child: Lottie.asset(
+                                              'assets/lotties/noBooks.json'),
+                                          height: 350,
+                                        ),
+                                        const Text(
+                                          'No books found..',
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 20,
+                                              color:
+                                                  AppConstants.kPrimaryColor),
+                                        )
+                                      ],
+                                    ),
                                   ),
-                                ),
-                              )
+                                )
                               : ListView.builder(
                                   itemCount: BlocProvider.of<BookBloc>(context)
                                           .searchList
-                                          .isEmpty
-                                      ? state.allBooksList.length
-                                      : BlocProvider.of<BookBloc>(context)
+                                          .isNotEmpty
+                                      ? BlocProvider.of<BookBloc>(context)
                                           .searchList
-                                          .length,
+                                          .length
+                                      : BlocProvider.of<BookBloc>(context)
+                                              .filterList
+                                              .isNotEmpty
+                                          ? BlocProvider.of<BookBloc>(context)
+                                              .filterList
+                                              .length
+                                          : state.allBooksList.length,
                                   itemBuilder: (context, index) => ProductCard(
                                     itemIndex: index,
                                     press: () {},
-                                    book: BlocProvider.of<BookBloc>(context)
-                                            .searchList
-                                            .isEmpty
-                                        ? state.allBooksList[index]
-                                        : BlocProvider.of<BookBloc>(context)
-                                            .searchList[index],
+
+
+                                    book: BlocProvider.of<BookBloc>(context).searchList.isNotEmpty ?  BlocProvider.of<BookBloc>(context).searchList[index] :
+                                          BlocProvider.of<BookBloc>(context).filterList.isNotEmpty ?  BlocProvider.of<BookBloc>(context).filterList[index] :
+                                         state.allBooksList[index]
+
+
                                   ),
                                 ),
                     ],

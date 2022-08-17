@@ -13,21 +13,31 @@ class BooksRepository extends BaseBookRepository {
 
   @override
   Future<Either<Failure, List<BookModel>>> getAllBooks() async {
-    final result =await  baseBookRemoteDataSource.getAllBooks();
+    final result = await baseBookRemoteDataSource.getAllBooks();
     try {
       return Right(result);
     } on ServerException catch (failure) {
-      return Left(ServerFailure( message:  failure.errorMessageModel.message));
+      return Left(ServerFailure(message: failure.errorMessageModel.message));
     }
   }
 
   @override
-  Future<Either<Failure, List<BookModel>>> searchBooks(String name) async{
-    final result =await  baseBookRemoteDataSource.searchBooks(name);
+  Future<Either<Failure, List<BookModel>>> searchBooks(String name) async {
+    final result = await baseBookRemoteDataSource.searchBooks(name);
     try {
       return Right(result);
     } on ServerException catch (failure) {
-      return Left(ServerFailure( message:  failure.errorMessageModel.message));
+      return Left(ServerFailure(message: failure.errorMessageModel.message));
+    }
+  }
+
+  @override
+  Future<Either<Failure, List<BookModel>>> filterBooks(String topicName) async {
+    final result = await baseBookRemoteDataSource.filterBooks(topicName);
+    try {
+      return Right(result);
+    } on ServerException catch (failure) {
+      return Left(ServerFailure(message: failure.errorMessageModel.message));
     }
   }
 }

@@ -24,10 +24,16 @@ class BookModel extends Book {
         downloadCount: json['download_count']??0);
   }
 
-  static List<AuthorModel>? parseItems(sportsJson) {
-    var list = sportsJson['authors'] as List;
+  static List<AuthorModel>? parseItems(authorsJson) {
+    var list = authorsJson['authors'] as List;
+    List<AuthorModel> authorsList;
     if (list.isNotEmpty) {
-      List<AuthorModel> authorsList =
+     authorsList =
+          list.map((data) => AuthorModel.fromJson(data)).toList();
+      return authorsList;
+    }else  {
+      list=[{"name":"Ahmed Radwan","birth_year":1928,"death_year":null}];
+      authorsList =
           list.map((data) => AuthorModel.fromJson(data)).toList();
       return authorsList;
     }
