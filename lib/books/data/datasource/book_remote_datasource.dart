@@ -9,9 +9,14 @@ import 'package:e_books/core/utils/app_constatnts.dart';
 abstract class BaseBookRemoteDataSource {
   Future<List<BookModel>> getAllBooks();
 
+  Future<List<BookModel>> getExtraBooks(int pageNumber);
+
   Future<List<BookModel>> searchBooks(String name);
 
   Future<List<BookModel>> filterBooks(String topicName);
+
+
+
 }
 
 class BookRemoteDataSource extends BaseBookRemoteDataSource {
@@ -29,6 +34,26 @@ class BookRemoteDataSource extends BaseBookRemoteDataSource {
           errorMessageModel: ErrorMessageModel.fromJson(response.data));
     }
   }
+
+
+
+  @override
+  Future<List<BookModel>> getExtraBooks(int pageNumber) async {
+    print('pageNum = $pageNumber');
+    final response =
+        await Dio().get(AppConstants.baseUrl + AppConstants.extraBooksEndPoint+pageNumber.toString());
+    log('extra response is ${response.toString()}');
+    if (response.statusCode == 200) {
+      return List<BookModel>.from((response.data['results']).map((e) {
+        return BookModel.fromJson(e);
+      }));
+    } else {
+      throw ServerException(
+          errorMessageModel: ErrorMessageModel.fromJson(response.data));
+    }
+  }
+
+
 
   @override
   Future<List<BookModel>> searchBooks(String bookName) async {

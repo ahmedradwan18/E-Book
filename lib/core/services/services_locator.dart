@@ -3,6 +3,7 @@ import 'package:e_books/books/data/repository/books_repository.dart';
 import 'package:e_books/books/domain/repository/base_book_repository.dart';
 import 'package:e_books/books/domain/usecases/filter_books_usecase.dart';
 import 'package:e_books/books/domain/usecases/get_all_books_usecase.dart';
+import 'package:e_books/books/domain/usecases/get_extra_books_usecase.dart';
 import 'package:e_books/books/domain/usecases/search_books_usecase.dart';
 import 'package:e_books/books/presentation/controller/books_bloc.dart';
 import 'package:get_it/get_it.dart';
@@ -14,13 +15,14 @@ class ServicesLocator{
 
     
     /// BLOC
-    sl.registerFactory(() => BookBloc(sl(), sl(),sl(),sl()));
+    sl.registerFactory(() => BookBloc(sl(), sl(),sl(),sl(),sl()));
     
     
     /// USE CASES
     sl.registerLazySingleton(() => GetAllBooksUsecase(baseBookRepository: sl()));
     sl.registerLazySingleton(() => SearchBooksUsecase(baseBookRepository: sl()));
     sl.registerLazySingleton(() => FilterBooksUsecase(baseBookRepository: sl()));
+    sl.registerLazySingleton(() => GetExtraBooksUsecase(baseBookRepository: sl()));
 
 
     /// REPOSITORY

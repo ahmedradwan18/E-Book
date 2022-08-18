@@ -17,6 +17,17 @@ class SearchBooksEvent extends BooksEvent {
   List<Object> get props => [name];
 }
 
+
+class LoadMoreDataEvent extends BooksEvent {
+  final int pageNumber;
+
+  const LoadMoreDataEvent(this.pageNumber);
+
+  @override
+  List<Object> get props => [pageNumber];
+}
+
+
 class FilteredBooksEvent extends BooksEvent {
   final String topic;
   final int categoryIndex;

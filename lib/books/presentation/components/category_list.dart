@@ -30,8 +30,10 @@ class _CategoryListState extends State<CategoryList> {
     return BlocListener<BookBloc, BookStates>(
         listener: (context, state) {
           if (state.filteredBooksState == RequestState.loaded) {
-            Navigator.maybePop(context);
+print('aaaaaaaaaaaaalll');
+              Navigator.maybePop(context);
           }
+
         },
         child: Container(
           margin: const EdgeInsets.symmetric(
@@ -42,7 +44,10 @@ class _CategoryListState extends State<CategoryList> {
             itemCount: categories.length,
             itemBuilder: (context, index) => GestureDetector(
               onTap: () async {
-                showLoaderDialog(context);
+                if(index!=0){
+                  showLoaderDialog(context);
+                }
+
 
                 BlocProvider.of<BookBloc>(context).add( FilteredBooksEvent(
                     categories[index].toString().toLowerCase(), index));

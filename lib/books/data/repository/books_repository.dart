@@ -40,4 +40,14 @@ class BooksRepository extends BaseBookRepository {
       return Left(ServerFailure(message: failure.errorMessageModel.message));
     }
   }
+
+  @override
+  Future<Either<Failure, List<Book>>> getExtraBooks(int pageNumber) async{
+    final result = await baseBookRemoteDataSource.getExtraBooks(pageNumber);
+    try {
+      return Right(result);
+    } on ServerException catch (failure) {
+      return Left(ServerFailure(message: failure.errorMessageModel.message));
+    }
+  }
 }

@@ -12,7 +12,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lottie/lottie.dart';
-import 'package:shimmer/shimmer.dart';
 
 class BooksScreen extends StatefulWidget {
   const BooksScreen({Key? key}) : super(key: key);
@@ -23,15 +22,33 @@ class BooksScreen extends StatefulWidget {
 
 class _BooksScreenState extends State<BooksScreen> {
   String searchedName = '';
+  final _controller = ScrollController();
+
+  @override
+  void initState() {
+    super.initState();
+
+    // Setup the listener.
+    _controller.addListener(() {
+      if (_controller.position.atEdge) {
+        bool isTop = _controller.position.pixels == 0;
+        if (isTop) {
+          print('At the top');
+        } else {
+          BlocProvider.of<BookBloc>(context).add( LoadMoreDataEvent(BlocProvider.of<BookBloc>(context).pageNumber+1));
+          print('At the bottom');
+        }
+      }
+    });
+  }
+
 
   @override
   Widget build(BuildContext context) {
     print('inside build');
-    return BlocProvider(create: (BuildContext context) {
-      return BookBloc(const BookStates(), sl(), sl(), sl())
-        ..add(GetAllBooksEvent());
-    }, child: BlocBuilder<BookBloc, BookStates>(
+    return BlocBuilder<BookBloc, BookStates>(
       builder: (context, state) {
+        print('tate now iss $state');
         return Scaffold(
           backgroundColor: AppConstants.kPrimaryColor,
           body: SafeArea(
@@ -94,32 +111,42 @@ class _BooksScreenState extends State<BooksScreen> {
                                     ),
                                   ),
                                 )
-                              : ListView.builder(
-                                  itemCount: BlocProvider.of<BookBloc>(context)
-                                          .searchList
-                                          .isNotEmpty
-                                      ? BlocProvider.of<BookBloc>(context)
-                                          .searchList
-                                          .length
-                                      : BlocProvider.of<BookBloc>(context)
-                                              .filterList
-                                              .isNotEmpty
-                                          ? BlocProvider.of<BookBloc>(context)
-                                              .filterList
-                                              .length
-                                          : state.allBooksList.length,
-                                  itemBuilder: (context, index) => ProductCard(
-                                    itemIndex: index,
-                                    press: () {},
+                              : Column(
+                                children: [
+                                  Expanded(
+                                    child: ListView.builder(
+                                      shrinkWrap: true,
+                          controller: _controller,
+                                        itemCount: BlocProvider.of<BookBloc>(context)
+                                                .searchList
+                                                .isNotEmpty
+                                            ? BlocProvider.of<BookBloc>(context)
+                                                .searchList
+                                                .length
+                                            : BlocProvider.of<BookBloc>(context)
+                                                    .filterList
+                                                    .isNotEmpty
+                                                ? BlocProvider.of<BookBloc>(context)
+                                                    .filterList
+                                                    .length
+                                                : state.allBooksList.length,
+                                        itemBuilder: (context, index) => ProductCard(
+                                          itemIndex: index,
+                                          press: () {},
 
 
-                                    book: BlocProvider.of<BookBloc>(context).searchList.isNotEmpty ?  BlocProvider.of<BookBloc>(context).searchList[index] :
-                                          BlocProvider.of<BookBloc>(context).filterList.isNotEmpty ?  BlocProvider.of<BookBloc>(context).filterList[index] :
-                                         state.allBooksList[index]
+                                          book: BlocProvider.of<BookBloc>(context).searchList.isNotEmpty ?  BlocProvider.of<BookBloc>(context).searchList[index] :
+                                                BlocProvider.of<BookBloc>(context).filterList.isNotEmpty ?  BlocProvider.of<BookBloc>(context).filterList[index] :
+                                               state.allBooksList[index]
 
 
+                                        ),
+                                      ),
                                   ),
-                                ),
+                                  (state.isMaxScroll)? const CircularProgressIndicator():Container()
+                                ],
+                              ),
+
                     ],
                   ),
                 ),
@@ -128,7 +155,7 @@ class _BooksScreenState extends State<BooksScreen> {
           ),
         );
       },
-    ));
+    );
   }
 
   AppBar buildAppBar() {

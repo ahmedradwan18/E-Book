@@ -18,19 +18,27 @@ class BookStates extends Equatable {
   final RequestState filteredBooksState;
   final String filteredBooksMessage;
 
+  // Extra Books states
+  final bool isMaxScroll;
+  final List<Book> extraBooksList;
+  final RequestState extraBooksState;
+  final String extraBooksMessage;
 
-  const BookStates(
-      {this.allBooksList = const [],
-      this.allBooksState = RequestState.loading,
-      this.allBooksMessage = '',
-      this.searchBooksList = const [],
-      this.searchBooksMessage = '',
-      this.searchBooksState = RequestState.loading,
-      this.filteredBooksList = const [],
-      this.filteredBooksMessage = '',
-      this.filteredBooksState = RequestState.loading,
-     // this.currentCategoryIndex = 0
-      });
+  const BookStates({
+    this.allBooksList = const [],
+    this.isMaxScroll = false,
+    this.extraBooksList = const [],
+    this.extraBooksState = RequestState.initial,
+    this.extraBooksMessage = '',
+    this.allBooksState = RequestState.loading,
+    this.allBooksMessage = '',
+    this.searchBooksList = const [],
+    this.searchBooksMessage = '',
+    this.searchBooksState = RequestState.loading,
+    this.filteredBooksList = const [],
+    this.filteredBooksMessage = '',
+    this.filteredBooksState = RequestState.loading,
+  });
 
   BookStates copyWith(
       {List<Book>? allBooksList,
@@ -42,8 +50,11 @@ class BookStates extends Equatable {
       List<Book>? filteredBooksList,
       RequestState? filteredBooksState,
       String? filteredBooksMessage,
-      int? currentCategoryIndex
-      }) {
+      int? currentCategoryIndex,
+      bool? isMaxScroll,
+      List<Book>? extraBooksList,
+      RequestState? extraBooksState,
+      String? extraBooksMessage}) {
     return BookStates(
         allBooksState: allBooksState ?? this.allBooksState,
         allBooksList: allBooksList ?? this.allBooksList,
@@ -54,8 +65,10 @@ class BookStates extends Equatable {
         filteredBooksList: filteredBooksList ?? this.filteredBooksList,
         filteredBooksMessage: filteredBooksMessage ?? this.filteredBooksMessage,
         filteredBooksState: filteredBooksState ?? this.filteredBooksState,
-       // currentCategoryIndex: currentCategoryIndex?? this.currentCategoryIndex
-        );
+       isMaxScroll: isMaxScroll ?? this.isMaxScroll,
+        extraBooksList: extraBooksList ?? this.extraBooksList,
+        extraBooksMessage: extraBooksMessage ?? this.extraBooksMessage,
+        extraBooksState: extraBooksState ?? this.extraBooksState);
   }
 
   @override
@@ -69,6 +82,6 @@ class BookStates extends Equatable {
         filteredBooksMessage,
         filteredBooksList,
         filteredBooksState,
-      //  currentCategoryIndex
+        isMaxScroll
       ];
 }
