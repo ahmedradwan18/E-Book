@@ -12,3 +12,10 @@ class LocalDataBaseException implements Exception{
 
   const LocalDataBaseException({required this.errorMessage});
 }
+
+
+class OfflineException implements Exception{
+  final String errorMessage;
+
+  const OfflineException({required this.errorMessage});
+}

@@ -42,6 +42,9 @@ dependencies:
   shimmer: ^2.0.0
   cached_network_image:
   lottie:
+  internet_connection_checker: ^0.0.1+3
+  hive: ^2.2.3
+  hive_flutter: ^1.1.0
 
 
 
@@ -56,6 +59,8 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^1.0.0
+  hive_generator:
+  build_runner:
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
