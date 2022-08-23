@@ -21,10 +21,6 @@ class BooksRepository extends BaseBookRepository {
     required this.networkInfo,
   });
 
-
-
-
-
   @override
   Future<Either<Failure, List<Book>>> getAllBooks() async {
     Box box = await baseBookLocalDataSource.openBox();
@@ -40,9 +36,15 @@ class BooksRepository extends BaseBookRepository {
       try {
         final localPosts = await baseBookLocalDataSource.getCachedBooks(box);
         print('localPosts.length ${localPosts.length}');
-        return Right(localPosts);
+        if(localPosts.isEmpty){
+          return const Left(DatabaseFailure(
+              message: 'database is empty'));
+
+        }else{   return Right(localPosts);}
+
       } on LocalDataBaseException catch (failure) {
-        return Left(DatabaseFailure(message: failure.errorMessage.toString()));
+        return Left(DatabaseFailure(
+            message: 'db failure is ${failure.errorMessage.toString()}'));
       }
     }
   }
@@ -88,9 +90,5 @@ class BooksRepository extends BaseBookRepository {
         return Left(DatabaseFailure(message: failure.errorMessage.toString()));
       }
     }
-
-
-
-
   }
 }

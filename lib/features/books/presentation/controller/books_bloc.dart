@@ -26,9 +26,6 @@ class BookBloc extends Bloc<BooksEvent, BookStates> {
   int pageNumber = 1;
 
 
-
-
-
   BookBloc(BookStates initialState, this.getAllBooksUsecase,
       this.searchBooksUsecase, this.filterBooksUsecase, this.extraBooksUsecase)
       : super(const BookStates(
@@ -43,14 +40,14 @@ class BookBloc extends Bloc<BooksEvent, BookStates> {
     on<FilteredBooksEvent>(_filterBooks);
 
     on<LoadMoreDataEvent>(_loadMoreData);
+
+
+
+
+
+
+
   }
-
-
-
-
-
-
-
 
   FutureOr<void> _getAllBooks(
       GetAllBooksEvent event, Emitter<BookStates> emit) async {
@@ -68,29 +65,24 @@ class BookBloc extends Bloc<BooksEvent, BookStates> {
     });
   }
 
-
-
-
-
-
   FutureOr<void> _loadMoreData(
       LoadMoreDataEvent event, Emitter<BookStates> emit) async {
-    emit(state.copyWith(extraBooksState: RequestState.loading,isMaxScroll: true));
-
+    emit(state.copyWith(
+        extraBooksState: RequestState.loading, isMaxScroll: true));
 
     final result = await extraBooksUsecase(event.pageNumber);
 
     result.fold(
-            (l) => emit(state.copyWith(
+        (l) => emit(state.copyWith(
             extraBooksState: RequestState.error,
-            extraBooksMessage: l.message)),
-            (r) {
-
-      emit(state.copyWith(extraBooksState: RequestState.loaded, allBooksList: bookList+r,isMaxScroll: false));
+            extraBooksMessage: l.message)), (r) {
+      emit(state.copyWith(
+          extraBooksState: RequestState.loaded,
+          allBooksList: bookList + r,
+          isMaxScroll: false));
       pageNumber++;
-      filterList.addAll(r) ;
+      filterList.addAll(r);
     });
-
   }
 
   FutureOr<void> _searchBooks(

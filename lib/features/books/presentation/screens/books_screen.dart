@@ -1,4 +1,3 @@
-
 import 'package:e_books/core/utils/app_constatnts.dart';
 import 'package:e_books/core/utils/enums.dart';
 import 'package:e_books/core/utils/shared/search_box.dart';
@@ -10,8 +9,6 @@ import 'package:e_books/features/books/presentation/controller/books_events.dart
 import 'package:e_books/features/books/presentation/controller/books_states.dart';
 import 'package:e_books/features/network_connectivity_bloc/network_bloc.dart';
 import 'package:e_books/features/network_connectivity_bloc/network_states.dart';
-
-
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -52,10 +49,10 @@ class _BooksScreenState extends State<BooksScreen> {
         if (isTop) {
           print('At the top');
         } else {
-if( BlocProvider.of<NetworkBloc>(context).isNetworkConnected){
-  BlocProvider.of<BookBloc>(context).add(LoadMoreDataEvent(
-      BlocProvider.of<BookBloc>(context).pageNumber + 1));
-}
+          if (BlocProvider.of<NetworkBloc>(context).isNetworkConnected) {
+            BlocProvider.of<BookBloc>(context).add(LoadMoreDataEvent(
+                BlocProvider.of<BookBloc>(context).pageNumber + 1));
+          }
 
           print('At the bottom');
         }
@@ -67,15 +64,44 @@ if( BlocProvider.of<NetworkBloc>(context).isNetworkConnected){
   Widget build(BuildContext context) {
     print('inside build');
     return BlocBuilder<BookBloc, BookStates>(
+
       builder: (context, state) {
-        print('tate now iss $state');
-        return Scaffold(
+        print('state now is $state');
+        if(state.allBooksState==RequestState.error){
+          return Scaffold(
+            body: Center(
+              child: Padding(
+                padding: const EdgeInsets.only(top: 150),
+                child: Column(
+                  children: [
+                    SizedBox(
+                      child: Lottie.asset(
+                          'assets/lotties/noBooks.json'),
+                      height: 350,
+                    ),
+                    const Text(
+                      'No books found..',
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 20,
+                          color:
+                          AppConstants.kPrimaryColor),
+                    )
+                  ],
+                ),
+              ),
+            ),
+          );
+
+        }else {
+          return
+
+          Scaffold(
           backgroundColor: AppConstants.kPrimaryColor,
           body: SafeArea(
             bottom: false,
             child: Column(
               children: <Widget>[
-
                 BlocBuilder<NetworkBloc, NetworkStates>(
                   builder: (netContext, networkState) {
                     if (networkState.isConnected) {
@@ -83,15 +109,16 @@ if( BlocProvider.of<NetworkBloc>(context).isNetworkConnected){
                         children: [
                           SearchBox(onChanged: (value) async {
                             searchedName = value;
-                            await Future.delayed(const Duration(milliseconds: 300));
+                            await Future.delayed(
+                                const Duration(milliseconds: 300));
                             if (value != '') {
                               BlocProvider.of<BookBloc>(context)
                                   .add(SearchBooksEvent(value));
                             } else {
-                              BlocProvider.of<BookBloc>(context).add(GetAllBooksEvent());
+                              BlocProvider.of<BookBloc>(context)
+                                  .add(GetAllBooksEvent());
                             }
                           }),
-
                           CategoryList(),
                         ],
                       );
@@ -129,11 +156,12 @@ if( BlocProvider.of<NetworkBloc>(context).isNetworkConnected){
                                     child: Column(
                                       children: [
                                         SizedBox(
-                                          child: Lottie.asset('assets/lotties/noBooks.json'),
+                                          child: Lottie.asset(
+                                              'assets/lotties/noBooks.json'),
                                           height: 350,
                                         ),
                                         const Text(
-                                          'No features.books found..',
+                                          'No books found..',
                                           style: TextStyle(
                                               fontWeight: FontWeight.bold,
                                               fontSize: 20,
@@ -200,6 +228,7 @@ if( BlocProvider.of<NetworkBloc>(context).isNetworkConnected){
             ),
           ),
         );
+        }
       },
     );
   }
